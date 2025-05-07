@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+        Flip Memory Game
+    </title>
+</head>
+
+<body>
+    <script>
+        var images = ["asset/elephant.jpg", "asset/giraffe.jpg", "asset/hippopotamus.jpg",
+            "asset/koala.jpg", "asset/lion.jpg", "asset/monkey.jpg",
+            "asset/tiger.jpg", "asset/zebra.jpg"];
+        var flip = [];
+        var lock = false;
+        var screen = document.createElement("div");
+        screen.style.width = "100%";
+        screen.style.height = "100vh";
+        screen.style.display = "flex";
+        screen.style.justifyContent = "center";
+        screen.style.alignItems = "center";
+        screen.style.flexDirection = "column";
+        screen.style.background = "linear-gradient(to right, #43cea2, #185a9d)";
+        document.body.appendChild(screen);
+
+        var title = document.createElement("h2");
+        title.textContent = "Flip Memory Game";
+        title.style.color = "white";
+        screen.appendChild(title);
+
+        var button = document.createElement("button");
+        button.textContent = "Restart";
+        button.style.fontWeight = "bold";
+        button.style.color="white";
+        button.style.boxShadow = "0 4px 6px rgba(0, 0, 0, 0.2)";
+        button.style.border = "none";
+        button.style.cursor = "pointer";
+        button.style.padding = "15px";
+        button.style.borderRadius = "4px";
+        button.style.backgroundColor = "#00BCD4"
+        screen.appendChild(button);
+
+        var board = document.createElement("div");
+        board.style.display = "flex";
+        board.style.width = "506px";
+        board.style.height = "506px";
+        board.style.flexWrap = "wrap";
+        board.style.justifyContent = "center";
+        board.style.alignItems = "center";
+        screen.appendChild(board);
+        board.style.aspectRatio = "1 / 1";
+
+        function memoryGame() {
+
+            board.innerHTML = "";
+            flip = [];
+            lock = false;
+
+            var pairedImages = images.concat(images);
+            pairedImages.sort(() => 0.5 - Math.random());
+
+            var k = 0;
+
+
+            for (var i = 1; i <= 4; i++) {
+                for (var j = 1; j <= 4; j++) {
+                    var box = document.createElement("div");
+                    box.style.width = "100px";
+                    box.style.height = "100px";
+                    box.textContent = "?"
+                    box.style.cursor = "pointer";
+                    box.style.backgroundColor = "white";
+                    box.style.border = "1px solid black";
+                    box.style.borderRadius = "8px"
+                    box.style.textAlign = "center";
+                    box.style.lineHeight = "90px";
+                    box.style.fontSize = "45px";
+                    board.appendChild(box);
+                    box.dataset.image = pairedImages[k];
+                    k++;
+
+                    box.onmouseenter = function () {
+                        this.style.backgroundColor = "#00BCD4";
+                    }
+
+                    box.onmouseleave = function () {
+                        this.style.backgroundColor = "white"
+                    }
+
+                    box.addEventListener("click", function () {
+                        if (lock || flip.includes(this) || this.style.backgroundImage)
+                            return;
+                        this.textContent = "";
+                        this.style.backgroundImage = `url(${this.dataset.image})`;
+                        this.style.backgroundSize = "cover";
+                        this.style.backgrounPosition = "center";
+
+                        flip.push(this);
+
+                        if (flip.length === 2) {
+                            lock = true;
+                            setTimeout(() => {
+                                if (flip[0].dataset.image !== flip[1].dataset.image) {
+                                    flip.forEach(b => {
+                                        b.textContent = "?";
+                                        b.style.backgroundImage = "";
+                                        b.style.backgroundColor = "wheat";
+                                    });
+
+                                }
+
+                                flip = [];
+                                lock = false;
+
+                            }, 1000);
+                        }
+                    });
+                }
+
+            }
+        }
+
+        button.onclick = memoryGame;
+
+
+        memoryGame();
+
+    </script>
+</body>
+
+</html>
